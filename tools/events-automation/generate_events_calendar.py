@@ -27,26 +27,25 @@ END_DATE_WEEKS = 4 # Number of weeks to skip
 
 def get_closest_wednesday():
     """
-    Returns the closest Wednesday to the current day with timezone-aware in UTC.
+    Returns the closest Wednesday to the current day
     """
     day = datetime.datetime.today()
 
     while day.weekday() != WEDNESDAY_DATETIME_DAY:
         day += datetime.timedelta(days=1)
-
-    # the return day must be with time zone offset, which with UTC timezone information
-    return datetime.datetime(day.year, day.month, day.day, tzinfo=datetime.timezone.utc)
+    
+    return day
 
 def get_desired_date_range():
     """
-    Returns datetime.datetime for the next closest Wednesday, and the Wednesday that is four weeks later.
+    Returns datetime.datetime for the next closest Wednesday, and the Wednesday that 
+    is four weeks later.
     """
     closest_wednesday = get_closest_wednesday()
 
     # We add END_DATE_WEEKS, and 1 day because Meetup requires DAY+1 for proper querying
     end_date = closest_wednesday + datetime.timedelta(weeks=END_DATE_WEEKS, days=1) 
 
-    # Return as RFC3339 timestamps with the 'Z' designator for UTC
     return closest_wednesday, end_date
 
 def authenticate() -> list[:]:
@@ -74,8 +73,10 @@ def authenticate() -> list[:]:
     
     try:
         service = build("calendar", "v3", credentials=creds)
-        # Get the desired date range in RFC3339 format
+        # Get the desired date range in RFC3339 format with time zone offset, which with UTC timezone information
         timeMin, timeMax = get_desired_date_range()
+        timeMin = datetime.datetime(timeMin.year, timeMin.month, timeMin.day, tzinfo=datetime.timezone.utc)
+        timeMax = datetime.datetime(timeMax.year, timeMax.month, timeMax.day, tzinfo=datetime.timezone.utc)
         calendars_result = service.events().list(
             calendarId="apd9vmbc22egenmtu5l6c5jbfc@group.calendar.google.com",
             timeMin=timeMin.isoformat(), 
