@@ -1,5 +1,4 @@
 import datetime
-import os.path
 import json
 import os
 import re
@@ -23,7 +22,38 @@ load_dotenv()
 # TODO: this is personal credentials oath2 client ids, so this may need to change later on
 OAUTH2_CLIENT_SECRET_CRED = json.loads(os.getenv('CREDENTIALS_JSON', '{}'))
 
+WEDNESDAY_DATETIME_DAY = 2
+END_DATE_WEEKS = 4 # Number of weeks to skip
+
+def get_closest_wednesday():
+    """
+    Returns the closest Wednesday to the current day with timezone-aware in UTC.
+    """
+    day = datetime.datetime.today()
+
+    while day.weekday() != WEDNESDAY_DATETIME_DAY:
+        day += datetime.timedelta(days=1)
+
+    # the return day must be with time zone offset, which with UTC timezone information
+    return datetime.datetime(day.year, day.month, day.day, tzinfo=datetime.timezone.utc)
+
+def get_desired_date_range():
+    """
+    Returns datetime.datetime for the next closest Wednesday, and the Wednesday that is four weeks later.
+    """
+    closest_wednesday = get_closest_wednesday()
+
+    # We add END_DATE_WEEKS, and 1 day because Meetup requires DAY+1 for proper querying
+    end_date = closest_wednesday + datetime.timedelta(weeks=END_DATE_WEEKS, days=1) 
+
+    # Return as RFC3339 timestamps with the 'Z' designator for UTC
+    return closest_wednesday, end_date
+
 def authenticate() -> list[:]:
+    """
+    Authenticates with the Google API, queries the Google Calendar API, and returns a list of events
+    :rtype: list[]
+    """
     creds = None
     # Credential authentication one time creates token.json automatically when the authorization flow completes, so we don't have to authenticate every time.
     if os.path.exists("token.json"):
@@ -44,12 +74,12 @@ def authenticate() -> list[:]:
     
     try:
         service = build("calendar", "v3", credentials=creds)
-
-        # TODO: Call the Calendar API, queries all events from closest Wednesday to the next 4 weeks
+        # Get the desired date range in RFC3339 format
+        timeMin, timeMax = get_desired_date_range()
         calendars_result = service.events().list(
             calendarId="apd9vmbc22egenmtu5l6c5jbfc@group.calendar.google.com",
-            timeMin='2024-03-14T06:00:00-07:00', 
-            timeMax='2024-03-23T06:00:00-07:00', 
+            timeMin=timeMin.isoformat(), 
+            timeMax=timeMax.isoformat(), 
             singleEvents=True,
             orderBy='startTime'
         ).execute()
@@ -59,6 +89,10 @@ def authenticate() -> list[:]:
 
 # TODO: Implement the function to return list of google.events into list of generic type Event
 def get_events() -> list[Event]:
+    """
+    Returns a list of Event objects converted from Google Calendar events.
+    :rtype: list[Event]
+    """
     event_list = list()
     events = authenticate()
     for event in events:
@@ -87,6 +121,11 @@ def get_events() -> list[Event]:
     return event_list
 
 def get_URLs(text) -> str:
+    """
+    Returns the first valid URL found in the text.
+    :type text: str
+    :rtype: str
+    """
     soup = BeautifulSoup(text, "html.parser")
     link = soup.find('a')
     if link:
