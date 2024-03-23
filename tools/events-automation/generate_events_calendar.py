@@ -8,6 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -88,7 +89,6 @@ def authenticate() -> list[:]:
     except HttpError as error:
         print(f"An error occurred: {error}")
 
-# TODO: Implement the function to return list of google.events into list of generic type Event
 def get_events() -> list[Event]:
     """
     Returns a list of Event objects converted from Google Calendar events.
@@ -96,27 +96,22 @@ def get_events() -> list[Event]:
     """
     event_list = list()
     events = authenticate()
+    # count = 1
     for event in events:
         # name, location, date, url, virtual, organizerName, maybeSpam
         name = event.get("summary", "No title")
         location = event.get("location", event["start"].get("timeZone", "No location"))
         date = event["start"].get("dateTime", event["start"].get("date"))
         description = event.get("description", "No description")
-        virtual = True
+        virtual = True # update the Event attribute virtual to True, False, None
         organizerName = event["organizer"].get("displayName", "No organizer")
-        maybeSpam = False
+        maybeSpam = False #change to irrelevant
 
         url = get_URLs(description)
         if url == "No URL":
             url = get_URLs(location)
             if url == "No URL":
                 virtual = False
-
-        # Check what info missing should be consider the event is spam?
-        
-        print(date,  " | ", name, " | ", location, " \n ", organizerName,  " | ", url)
-        print(f"Virtual: {virtual}", " | ", maybeSpam)
-        print()
         event_list.append(Event(name, location, date, url, virtual, organizerName, maybeSpam))
 
     return event_list
@@ -140,5 +135,3 @@ def get_URLs(text) -> str:
         if bool(parsed_url.scheme) and bool(parsed_url.netloc): 
             return url
     return "No URL"
-
-print(get_events())
