@@ -11,13 +11,19 @@ from datetime import date, timedelta
 from country_code_to_continent import country_code_to_continent
 
 def main():
+    # Get event_list from sources.
     event_list = get_test_events()
+    
+    # Format date and location data
+    format_data(event_list)
+    
     # Sort Events within date range.
     # Sorted into virtual or by continent.
     # Ordered by date, then city.
-    # NOTE format for start_date is YYYY, MM, DD without unnecessary 0's.
-    # TODO code user input for window start date for parameter.
-    event_list = sort_and_filter_events(event_list, date.today())
+    # NOTE format for start_date is YYYY, MM, DD without leading 0's.
+    start_date = input("Window start date:\nFormat (YYYY, MM, DD) without leading 0's: ").split(",")
+    year, month, day = int(start_date[0].strip()), int(start_date[1].strip()), int(start_date[2].strip())
+    event_list = sort_and_filter_events(event_list, date(year, month, day))
 
     # Output Sorted Event List
     for continent in event_list:
@@ -37,6 +43,13 @@ def main():
                     print("** NOTE POTENTIAL DUPLICATE: **")
                 print(event.to_markdown_string())
             print()
+
+
+def format_data(event_list):
+    # Formats date and location data into specified format.
+    for event in event_list:
+        event.format_date()
+        event.format_location()
 
 
 def sort_and_filter_events(event_list, start_date) -> List[Event]:
