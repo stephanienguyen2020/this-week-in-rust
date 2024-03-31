@@ -6,6 +6,7 @@
 from typing import List
 from event import Event
 from test_events import get_test_events
+
 from datetime import date, timedelta
 from country_code_to_continent import country_code_to_continent
 
