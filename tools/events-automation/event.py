@@ -25,6 +25,7 @@ class Event():
     
 def format_date(self):
       # Formats datetime data into date.
+      print("Date: ", self.date)
       if isinstance(self.date, datetime.datetime):
         self.date = self.date.date()
 

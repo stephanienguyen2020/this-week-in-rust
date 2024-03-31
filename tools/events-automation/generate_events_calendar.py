@@ -101,11 +101,11 @@ def get_events() -> list[Event]:
         # name, location, date, url, virtual, organizerName, maybeSpam
         name = event.get("summary", "No title")
         location = event.get("location", event["start"].get("timeZone", "No location"))
-        date = event["start"].get("dateTime", event["start"].get("date"))
+        date = datetime.datetime.fromisoformat(event["start"].get("dateTime", event["start"].get("date")))
+        # date = event["start"].get("dateTime", event["start"].get("date"))
         description = event.get("description", "No description")
         virtual = True # update the Event attribute virtual to True, False, None
         organizerName = event["organizer"].get("displayName", "No organizer")
-        maybeSpam = False #change to irrelevant
 
         url = get_URLs(description)
         if url == "No URL":
