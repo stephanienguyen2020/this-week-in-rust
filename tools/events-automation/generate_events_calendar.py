@@ -112,7 +112,7 @@ def get_events() -> list[Event]:
             url = get_URLs(location)
             if url == "No URL":
                 virtual = False
-        event_list.append(Event(name, location, date, url, virtual, organizerName, maybeSpam))
+        event_list.append(Event(name, location, date, url, virtual, organizerName))
 
     return event_list
 
@@ -135,3 +135,5 @@ def get_URLs(text) -> str:
         if bool(parsed_url.scheme) and bool(parsed_url.netloc): 
             return url
     return "No URL"
+
+print(get_events())
