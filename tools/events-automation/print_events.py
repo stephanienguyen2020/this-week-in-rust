@@ -12,7 +12,7 @@ events = get_events()
 count = 1
 for event in events:
     print(count)
-    print(event.date,  " | ", event.name, " | ", event.location, " \n ",  "URL: ", event.url)
+    print(event.date,  " | ", event.name, " | ", event.location, "\n",  "Meetup URL: ", event.url)
     print(f"Organizer: {event.organizerName} | {event.organizerUrl}")
     print(f"Virtual: {event.virtual}")
     print("_________________________________________________________________________")

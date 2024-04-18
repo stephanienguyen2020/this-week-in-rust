@@ -122,7 +122,7 @@ def get_events() -> list[Event]:
             # split_url.path     "/seattle-rust-user-group/..."
             split_url = urlsplit(url)
             clean_path = "/".join((split_url.path).split("/")[:2])
-            organizerUrl = split_url.scheme + "://" + split_url.netloc + clean_path + "/"
+            organizerUrl = split_url.scheme + "://" + split_url.netloc + clean_path
             organizerName = (split_url.path).split("/")[1]
             # TODO: Checking if the organizerName is valid name
             if organizerName == "about" or organizerName == "event":
