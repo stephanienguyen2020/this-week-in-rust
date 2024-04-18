@@ -12,6 +12,7 @@ from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from urllib.parse import urlsplit
 from event import Event
 
 # TODO: not sure if we will need to modify the calendar events, set to read&modify for now
@@ -96,24 +97,37 @@ def get_events() -> list[Event]:
     """
     event_list = list()
     events = authenticate()
-    # count = 1
     for event in events:
-        # name, location, date, url, virtual, organizerName, maybeSpam
+        # Event(name, location, date, url, virtual, organizerName, organizerUrl, duplicate=False)
         name = event.get("summary", "No title")
         location = event.get("location", event["start"].get("timeZone", "No location"))
-        date = event["start"].get("dateTime", event["start"].get("date"))
+        date = datetime.datetime.fromisoformat(event["start"].get("dateTime", event["start"].get("date")))
         description = event.get("description", "No description")
         virtual = True # update the Event attribute virtual to True, False, None
-        organizerName = event["organizer"].get("displayName", "No organizer")
-        maybeSpam = False #change to irrelevant
-
+        organizerUrl = "No URL"
+        organizerName = "No organizer"
         url = get_URLs(description)
         if url == "No URL":
             url = get_URLs(location)
             if url == "No URL":
                 virtual = False
-        event_list.append(Event(name, location, date, url, virtual, organizerName, maybeSpam))
+        
+        if url != "No URL":
+            # TODO: Get the organizerURL, then extract the group name
+            # Format: [source](https://stackoverflow.com/questions/35616434/how-can-i-get-the-base-of-a-url-in-python)
+            # https://www.meetup.com/seattle-rust-user-group/...
+            # split_url.scheme   "http"
+            # split_url.netloc   "www.meetup.com" 
+            # split_url.path     "/seattle-rust-user-group/..."
+            split_url = urlsplit(url)
+            clean_path = "/".join((split_url.path).split("/")[:2])
+            organizerUrl = split_url.scheme + "://" + split_url.netloc + clean_path + "/"
+            organizerName = (split_url.path).split("/")[1]
+            # TODO: Checking if the organizerName is valid name
+            if organizerName == "about" or organizerName == "event":
+                organizerName = event["organizer"].get("displayName", "No organizer")
 
+        event_list.append(Event(name, location, date, url, virtual, organizerName, organizerUrl))
     return event_list
 
 def get_URLs(text) -> str:
