@@ -49,6 +49,7 @@ def main():
 def format_data(event_list):
     # Formats date and location data into specified format.
     for event in event_list:
+        # TODO delete print line when done testing
         print(event)
         event.format_date()
         event.format_location()

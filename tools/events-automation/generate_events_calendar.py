@@ -12,6 +12,7 @@ from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from urllib.parse import urlsplit
 from event import Event
 
 # TODO: not sure if we will need to modify the calendar events, set to read&modify for now
@@ -102,18 +103,25 @@ def get_events() -> list[Event]:
         name = event.get("summary", "No title")
         location = event.get("location", event["start"].get("timeZone", "No location"))
         date = datetime.datetime.fromisoformat(event["start"].get("dateTime", event["start"].get("date")))
-        # date = event["start"].get("dateTime", event["start"].get("date"))
         description = event.get("description", "No description")
         virtual = True # update the Event attribute virtual to True, False, None
-        organizerName = event["organizer"].get("displayName", "No organizer")
-
         url = get_URLs(description)
         if url == "No URL":
             url = get_URLs(location)
             if url == "No URL":
                 virtual = False
-        event_list.append(Event(name, location, date, url, virtual, organizerName))
+        # TODO: Get the organizerURL, then extract the group name
+        # Format: [source](https://stackoverflow.com/questions/35616434/how-can-i-get-the-base-of-a-url-in-python)
+        # https://www.meetup.com/seattle-rust-user-group/...
+        # split_url.scheme   "http"
+        # split_url.netloc   "www.meetup.com" 
+        # split_url.path     "/seattle-rust-user-group/..."
+        
+        split_url = urlsplit(url)
+        organizerUrl = split_url.geturl()
+        organizerName = (split_url.path).split("/")[1]
 
+        event_list.append(Event(name, location, date, url, virtual, organizerName, organizerUrl))
     return event_list
 
 def get_URLs(text) -> str:
@@ -135,5 +143,3 @@ def get_URLs(text) -> str:
         if bool(parsed_url.scheme) and bool(parsed_url.netloc): 
             return url
     return "No URL"
-
-print(get_events())
