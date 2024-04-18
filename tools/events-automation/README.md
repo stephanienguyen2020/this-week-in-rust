@@ -30,8 +30,7 @@ CREDENTIALS_JSON=<everything-from-credentials.json>
 
 Now you could call get_events() from generate_events_calendar
 
-### Response Body representation after sending authorization request with authenticate() function:
-[Google calendar example structure](https://developers.google.com/calendar/api/v3/reference/events/list?apix_params=%7B%22calendarId%22%3A%22apd9vmbc22egenmtu5l6c5jbfc%40group.calendar.google.com%22%7D#response)
+### A look of Event:list and Event:
+* [Google list of events example structure](https://developers.google.com/calendar/api/v3/reference/events/list?apix_params=%7B%22calendarId%22%3A%22apd9vmbc22egenmtu5l6c5jbfc%40group.calendar.google.com%22%7D#response)
 
-### Event representation:
-[Google event example structure](https://developers.google.com/calendar/api/v3/reference/events/list#response)
+* [Google event example structure](https://developers.google.com/calendar/api/v3/reference/events/list#response)
