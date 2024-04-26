@@ -111,3 +111,25 @@ def get_rush_groups():
         else:
             break
     return groups
+
+def get_known_rush_groups(fileName):
+    """
+    Read url and location of groups. Extract the urlname from the url
+    Return a dictionary of groups
+    """
+    groups = dict()
+    df = pd.read_csv(fileName, header=0, usecols=['url', 'location'])
+
+    # Format: [source](https://stackoverflow.com/questions/35616434/how-can-i-get-the-base-of-a-url-in-python)
+    # https://www.meetup.com/seattle-rust-user-group/
+    # split_url.scheme   "http"
+    # split_url.netloc   "www.meetup.com" 
+    # split_url.path     "/seattle-rust-user-group/"
+    for index, row in df.iterrows():
+        group = {}
+        group["link"] = row["url"]
+        split_url = urlsplit(group["link"])
+        group["urlname"] = (split_url.path).replace("/", "")
+        group["location"] = row["location"]
+        groups[index] = group
+    return groups
