@@ -25,3 +25,89 @@ def authenticate():
         print("Status Code:", response.status_code)
         print("Response:", response.text)
         return None, None
+
+def fetch_groups(endCursor=""):
+    URL = "https://api.meetup.com/gql"
+    access_token, refresh_token = authenticate()
+
+    if not access_token:
+        print("Authentication failed, cannot proceed to fetch events.")
+        return
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+
+    data = {
+        "query": """
+        query (
+            $searchGroupInput: ConnectionInput!, 
+            $searchGroupFilter: SearchConnectionFilter!,
+            $sortOrder: KeywordSort!
+        ) {
+            keywordSearch(
+                input: $searchGroupInput, 
+                filter: $searchGroupFilter,
+                sort: $sortOrder
+            ) {
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                edges {
+                    node {
+                        result {
+                            ... on Group {
+                                id
+                                name
+                                link
+                                urlname
+                                latitude
+                                longitude
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """,
+        "variables": {
+            "searchGroupFilter": {
+                "query": "Rust",
+                "lat": 0.0,
+                "lon": 0.0,
+                "radius": 20000,
+                "source": "GROUPS"
+            },
+            "searchGroupInput": {
+                "first": 200,
+                "after": endCursor
+            },
+            "sortOrder":{
+                "sortField": "RELEVANCE"
+            }
+        }
+    }
+    return requests.post(url=URL, headers=headers, json=data)
+
+def get_rush_groups():
+    """
+    Return a dictionary of groups
+    """
+    endCursor = None
+    groups = dict()
+    while True:
+        response = fetch_groups(endCursor).json()
+        data = response['data']
+        edges = data['keywordSearch']['edges']
+        pageInfo = data['keywordSearch']['pageInfo']
+        for node in edges:
+            group = node["node"]["result"]
+            if not (group["id"] in groups):
+                groups[group["id"]] = group
+        if pageInfo['hasNextPage']:
+            endCursor = pageInfo['endCursor']
+        else:
+            break
+    return groups
