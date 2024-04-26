@@ -51,7 +51,7 @@ def generate_signed_jwt():
         algorithm="RS256"
     )
 
-def decode_and_validate_token(): #get_token_payload/claims
+def decode_and_validate_jwt(): #get_token_payload/claims
     token = generate_signed_jwt()
     pem_public_key = get_PEM_public_key()
     try:
