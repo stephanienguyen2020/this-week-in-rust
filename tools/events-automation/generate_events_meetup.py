@@ -136,7 +136,6 @@ def get_known_rush_groups(fileName):
     return groups
 
 def get_20_events(groups) -> list[Event]:
-    # TODO: Make sure list of 20 events has all values for list of Event
     events = []
     URL = "https://api.meetup.com/gql"
     access_token, refresh_token = authenticate()
@@ -201,27 +200,25 @@ def get_20_events(groups) -> list[Event]:
                             lat, lng = 0, 0
                             virtual = True
                             venue = node["venue"]
-                            # TODO: What if venue is None? would it consider as spam event?
+                            # TODO: Handle events don't have venue, flagging the events and they will have to be check manually, or putting them in separate list to check
+                            # (for now ignore those events) 
                             if venue:
-                                lat, lng = venue["lat"], venue["lng"] # set to location?
+                                lat, lng = venue["lat"], venue["lng"]
                                 if venue["venueType"] != "online":
                                     virtual = False
-                            location = f"{lat}, {lng}"
-                            date = node["dateTime"]
-                            url = node["eventUrl"]
-                            organizerName = group.get("name", urlName)
-                            organizerUrl = group["link"]
-                            # print(f"Event({name}, location={location}\ndate={date}, url={url}, virtual={virtual}\norganizerName={organizerName}, organizerUrl={organizerUrl}\n")
-                            events.append(Event(name, location, date, url, virtual, organizerName, organizerUrl))
+                                location = f"{lat}, {lng}" # TODO: Use GeoPy to convert(lat, long) to address/location
+                                date = node["dateTime"]
+                                url = node["eventUrl"]
+                                organizerName = group.get("name", urlName)
+                                organizerUrl = group["link"]
+                                print(f"Event({name}, location={location}\ndate={date}, url={url}, virtual={virtual}\norganizerName={organizerName}, organizerUrl={organizerUrl}\n")
+                                events.append(Event(name, location, date, url, virtual, organizerName, organizerUrl))
     return events
 
 def get_events() -> list[Event]:
-    # TODO: get list of events from Meetup and known Rush groups, and combine two list together
-    # return the event source
-    # groups = get_rush_groups()
     events_meetup_groups = get_20_events(get_rush_groups())
-    # groups = get_known_rush_groups("rust_meetup_groups.csv")
     events_known_groups = get_20_events(get_known_rush_groups("rust_meetup_groups.csv"))
     return events_meetup_groups + events_known_groups
 
-print(len(get_events()))
+get_events()
+# print(len(get_events()))
