@@ -230,7 +230,8 @@ def format_location(address):
     components = ['road', 'city', 'state', 'postcode', 'country']
     
     # Get available components
-    location = [address.get(component, "") for component in components if address.get(component)]
+    location = [address.get(component, "") for component in components]
+
     return ', '.join(location) if location else "No location"
 
 def get_events() -> list[Event]:
@@ -238,4 +239,4 @@ def get_events() -> list[Event]:
     events_known_groups = get_20_events(get_known_rush_groups("rust_meetup_groups.csv"))
     return events_meetup_groups + events_known_groups
 
-print(len(get_events()))
+# get_events()
