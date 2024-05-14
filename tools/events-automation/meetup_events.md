@@ -57,7 +57,7 @@ python main.py
 ```
 This script performs the following operations:
 - Authenticates with the Meetup API using JWT.
-- Fetches data for known Rust groups from a CSV file and Meetup API.
+- Fetches data for known Rust groups from `.../tools/events-automation/rust_meetup_groups.csv` file and Meetup API.
 - Filters and formats the event data into a standardized structure.
 - Outputs the details of upcoming events.
 
