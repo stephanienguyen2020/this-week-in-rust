@@ -248,8 +248,8 @@ def get_20_events(groups) -> list[Event]:
 
                                 # Convert obtained latitude and longitude of an event to formatted location 
                                 address = (GEOLOCATOR.reverse(str(venue["lat"]) +","+ str(venue["lng"]))).raw["address"]
+                                #TODO: return the full address for location
                                 location = format_location(address)
-
                                 date = node["dateTime"]
                                 url = node["eventUrl"]
                                 organizerName = group.get("name", urlName)
