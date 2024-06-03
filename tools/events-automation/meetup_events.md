@@ -53,7 +53,7 @@ Before you start, ensure you have the following:
 ### Running the Script
 To fetch events, run the following command from the project directory `.../tools/events-automation`:
 ```bash
-python main.py
+python3 main.py
 ```
 This script performs the following operations:
 - Authenticates with the Meetup API using JWT.

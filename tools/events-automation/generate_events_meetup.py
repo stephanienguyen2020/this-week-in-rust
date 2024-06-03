@@ -248,13 +248,12 @@ def get_20_events(groups) -> list[Event]:
 
                                 # Convert obtained latitude and longitude of an event to formatted location 
                                 address = (GEOLOCATOR.reverse(str(venue["lat"]) +","+ str(venue["lng"]))).raw["address"]
+                                #TODO: return the full address for location
                                 location = format_location(address)
-
                                 date = node["dateTime"]
                                 url = node["eventUrl"]
                                 organizerName = group.get("name", urlName)
                                 organizerUrl = group["link"]
-                                # print(f"Event({name}, location={location}\ndate={date}, url={url}, virtual={virtual}\norganizerName={organizerName}, organizerUrl={organizerUrl}\n")
                                 events.append(Event(name, location, date, url, virtual, organizerName, organizerUrl))
     return events
 
@@ -279,8 +278,6 @@ def get_events() -> list[Event]:
     Returns a list of Event objects querying from known, and Meetup API Rust groups
     :rtype: list[Event]
     """
-    # events_meetup_groups = get_20_events(get_rush_groups())
+    # TODO: once the handling events without venue successful, get events_meetup_groups = get_20_events(get_rush_groups())
     events_known_groups = get_20_events(get_known_rush_groups())
     return events_known_groups
-
-# get_events()
