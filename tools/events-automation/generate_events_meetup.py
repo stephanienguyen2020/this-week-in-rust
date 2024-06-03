@@ -248,7 +248,6 @@ def get_20_events(groups) -> list[Event]:
 
                                 # Convert obtained latitude and longitude of an event to formatted location 
                                 address = (GEOLOCATOR.reverse(str(venue["lat"]) +","+ str(venue["lng"]))).raw["address"]
-                                #TODO: return the full address for location
                                 location = format_location(address)
                                 date = node["dateTime"]
                                 url = node["eventUrl"]
@@ -265,11 +264,12 @@ def format_location(address) -> str:
     if not address:
         return "No location"
     
-    # Components in the order for location
-    components = ['city', 'state', 'country']
-    
-    # Get available components, otherwise replace missing component with empty string
+    # All components for a location
+    components = ['road', 'city', 'state', 'postcode', 'country', 'country_code', 'suburb', 'neighborhood', 'county']
+
+    # Get available components, otherwise replace missing component with an empty string
     location = [address.get(component, "") for component in components]
+
 
     return ','.join(location) if location else "No location"
 
