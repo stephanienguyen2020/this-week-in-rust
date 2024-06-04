@@ -265,7 +265,7 @@ def format_location(address) -> str:
         return "No location"
     
     # All components for a location
-    components = ['road', 'city', 'state', 'postcode', 'country', 'country_code', 'suburb', 'neighborhood', 'county']
+    components = ['road', 'city', 'state', 'postcode', 'country']
 
     # Get available components, otherwise replace missing component with an empty string
     location = [address.get(component, "") for component in components]
