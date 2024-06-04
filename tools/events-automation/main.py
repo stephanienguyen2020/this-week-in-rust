@@ -6,12 +6,13 @@
 from test_events import get_test_events
 from datetime import date, timedelta
 from country_code_to_continent import country_code_to_continent
+from generate_events_meetup import get_events as get_meetup_events
 
 # TODO: Flagged events list handling.
 
 def main():
     # Get Events list from Event Sources.
-    event_list = get_test_events()
+    event_list = get_meetup_events()
 
     # Format date and location data.
     format_data(event_list)
