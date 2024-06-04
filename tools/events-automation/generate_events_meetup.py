@@ -249,7 +249,7 @@ def get_20_events(groups) -> list[Event]:
                                 # Convert obtained latitude and longitude of an event to formatted location 
                                 address = (GEOLOCATOR.reverse(str(venue["lat"]) +","+ str(venue["lng"]))).raw["address"]
                                 location = format_location(address)
-                                date = node["dateTime"]
+                                date = datetime.datetime.fromisoformat(node["dateTime"]).date()
                                 url = node["eventUrl"]
                                 organizerName = group.get("name", urlName)
                                 organizerUrl = group["link"]
